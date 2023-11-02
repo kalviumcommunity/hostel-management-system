@@ -210,42 +210,71 @@ INSERT INTO `userregistration` (`id`, `regNo`, `firstName`, `middleName`, `lastN
 
 --  Role-Based Access Control  ------------------------------->
 
-CREATE TABLE `roles` (
-  `id` int(11) NOT NULL,
-  `name` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+-- CREATE TABLE `roles` (
+--   `id` int(11) NOT NULL,
+--   `name` varchar(255) NOT NULL
+-- ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE `privileges` (
-  `id` int(11) NOT NULL,
-  `name` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+-- CREATE TABLE `privileges` (
+--   `id` int(11) NOT NULL,
+--   `name` varchar(255) NOT NULL
+-- ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE `role_privilege` (
-  `id` int(11) NOT NULL,
-  `role_id` int(11) NOT NULL,
-  `privilege_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+-- CREATE TABLE `role_privilege` (
+--   `id` int(11) NOT NULL,
+--   `role_id` int(11) NOT NULL,
+--   `privilege_id` int(11) NOT NULL
+-- ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-ALTER TABLE `admin`
-  ADD `role_id` int(11) NOT NULL;
--- Insert roles (e.g., admin and user)
-INSERT INTO `roles` (`id`, `name`) VALUES
-(1, 'admin'),
-(2, 'user');
+-- ALTER TABLE `admin`
+--   ADD `role_id` int(11) NOT NULL;
+-- -- Insert roles (e.g., admin and user)
+-- INSERT INTO `roles` (`id`, `name`) VALUES
+-- (1, 'admin'),
+-- (2, 'user');
 
--- Insert privileges (e.g., read, write, delete)
-INSERT INTO `privileges` (`id`, `name`) VALUES
-(1, 'read'),
-(2, 'write'),
-(3, 'delete');
+-- -- Insert privileges (e.g., read, write, delete)
+-- INSERT INTO `privileges` (`id`, `name`) VALUES
+-- (1, 'read'),
+-- (2, 'write'),
+-- (3, 'delete');
 
--- Associate roles with privileges (customize as needed)
-INSERT INTO `role_privilege` (`id`, `role_id`, `privilege_id`) VALUES
-(1, 1, 1), -- Admin has read privilege
-(2, 1, 2), -- Admin has write privilege
-(3, 1, 3), -- Admin has delete privilege
-(4, 2, 1); -- User has read privilege
-UPDATE `admin` SET `role_id` = 1 WHERE `id` = 1;
+-- -- Associate roles with privileges (customize as needed)
+-- INSERT INTO `role_privilege` (`id`, `role_id`, `privilege_id`) VALUES
+-- (1, 1, 1), -- Admin has read privilege
+-- (2, 1, 2), -- Admin has write privilege
+-- (3, 1, 3), -- Admin has delete privilege
+-- (4, 2, 1); -- User has read privilege
+-- UPDATE `admin` SET `role_id` = 1 WHERE `id` = 1;
+
+CREATE TABLE roles (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE privileges (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE role_privilege (
+  id INT NOT NULL AUTO_INCREMENT,
+  role_id INT NOT NULL,
+  privilege_id INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (role_id) REFERENCES roles(id),
+  FOREIGN KEY (privilege_id) REFERENCES privileges(id)
+);
+
+-- Update admin role
+UPDATE admin SET role_id = 1 WHERE id = 1;
+
+-- Update userregistration role
+UPDATE userregistration SET role_id = 2 WHERE id = 3;
+
+
 
 
