@@ -205,8 +205,8 @@ VALUES
 (2, 100, 5, 8000, 1, '2023-10-21', 6, 'Bachelor  of Technology', 10806121, 'Akash', 'd', 'Singh', 'male', 1234567890, 'ak@gmail.com', 1236547890, 'ABC', 'XYZ', 98756320000, 'ABC 12345 XYZ Street', 'New Delhi', 'Delhi (NCT)', 110001, 'ABC 12345 XYZ Street', 'New Delhi', 'Delhi (NCT)', 110001, '2023-10-21 14:58:26', NULL);
 
 INSERT INTO `user` (`id`, `regNo`, `firstName`, `middleName`, `lastName`, `gender`, `contactNo`, `email`, `password`, `regDate`, `updationDate`, `passUdateDate`) VALUES
-(1, '10806121', 'Akash', '', 'Singh', 'male', 1234567890, 'test@gmail.com', 'Test@123', '2023-10-23 14:56:18', NULL, NULL);
-(2, '10806121', 'Prakash', '', 'Singh', 'male', 1234567890, 'test2@gmail.com', 'Test@1234', '2023-10-23 14:56:18', NULL, NULL);
+(1, '10806121', 'Akash', '', 'Singh', 'male', 1234567890, 'test@gmail.com', 'Test@123', '2023-10-23 14:56:18', NULL, NULL),
+(2, '10806121', 'Prakash', '', 'Singh', 'male', 1234567890, 'test2@gmail.com', 'Test@1234', '2023-10-23 14:56:18', NULL, NULL)
 
 
 
@@ -241,19 +241,23 @@ ADD role_id INT;
 ALTER TABLE user
 ADD role_id INT;
 
--- Insert a role (ID will be automatically generated)
-INSERT INTO roles (name) VALUES ('editor');
+INSERT INTO roles (name) VALUES ('admin'), ('user');
 
--- Insert a privilege (ID will be automatically generated)
-INSERT INTO privileges (name) VALUES ('edit_content');
+-- Create Privileges
+INSERT INTO privileges (name) VALUES ('edit_content'), ('view_content');
 
--- Insert a role-privilege association
-INSERT INTO role_privilege (role_id, privilege_id) VALUES ((SELECT id FROM roles WHERE name = 'editor'), (SELECT id FROM privileges WHERE name = 'edit_content'));
+-- Role-Privilege Associations
+INSERT INTO role_privilege (role_id, privilege_id)
+VALUES
+  ((SELECT id FROM roles WHERE name = 'admin'), (SELECT id FROM privileges WHERE name = 'edit_content')),
+  ((SELECT id FROM roles WHERE name = 'admin'), (SELECT id FROM privileges WHERE name = 'view_content')),
+  ((SELECT id FROM roles WHERE name = 'user'), (SELECT id FROM privileges WHERE name = 'view_content'));
 
--- Update admin role
-UPDATE admin SET role_id = 1 WHERE id = 1;
+-- Update Admin Role
+UPDATE admin SET role_id = (SELECT id FROM roles WHERE name = 'admin');
 
--- Update user role
-UPDATE user
-SET role_id = 2;
+-- Update Role for All Users
+UPDATE user SET role_id = (SELECT id FROM roles WHERE name = 'user');
+
+
 
