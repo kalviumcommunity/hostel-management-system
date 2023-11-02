@@ -1,6 +1,3 @@
--- DDL commands used - CREATE,ALTER,DROP,RENAME
-
-
 -- Create the HMS database if it doesn't exist
 CREATE DATABASE IF NOT EXISTS HMS;
 
@@ -15,6 +12,14 @@ CREATE TABLE admin (
   updation_date DATE NOT NULL,
   PRIMARY KEY (id)
 );
+
+CREATE TABLE `adminlog` (
+  `id` int(11) NOT NULL,
+  `adminid` int(11) NOT NULL,
+  `ip` varbinary(16) NOT NULL,
+  `logintime` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 CREATE TABLE courses (
   id INT NOT NULL AUTO_INCREMENT,
@@ -115,6 +120,22 @@ CREATE TABLE userregistration (
 
 
 -- DML Commands - INSERT, UPDATE, DELETE, SELECT -------------------->
+-- UPDATE rooms
+-- SET seater = 1
+-- WHERE id = 1;
+
+-- UPDATE rooms
+-- SET fees = 5000
+-- WHERE id = 3;
+
+-- DELETE FROM rooms
+-- ORDER BY id DESC
+-- LIMIT 1;
+
+-- SELECT * FROM rooms
+-- WHERE fees <= 5000;
+
+
 INSERT INTO `rooms` (`id`, `seater`, `room_no`, `fees`, `posting_date`) VALUES
 (1, 5, 100, 8000, '2023-10-11 22:45:43'),
 (2, 2, 201, 6000, '2023-10-12 01:30:47'),
@@ -166,19 +187,65 @@ INSERT INTO `states` (`id`, `State`) VALUES
 (35, 'Uttar Pradesh'),
 (36, 'West Bengal');
 
+INSERT INTO `admin` (`id`, `username`, `email`, `password`, `reg_date`, `updation_date`) VALUES
+(1, 'admin', 'akash.lpu1@gmail.com', 'Test@1234', '2023-10-10 20:31:45', '2023-10-10');
 
 
-UPDATE rooms
-SET seater = 1
-WHERE id = 1;
+INSERT INTO `courses` (`id`, `course_code`, `course_sn`, `course_fn`, `posting_date`) VALUES
+(1, 'B10992', 'B.Tech', 'Bachelor  of Technology', '2023-10-14 19:31:42'),
+(2, 'BCOM1453', 'B.Com', 'Bachelor Of commerce ', '2023-10-14 19:31:42'),
+(3, 'BSC12', 'BSC', 'Bachelor  of Science', '2023-10-14 19:31:42'),
+(4, 'BC36356', 'BCA', 'Bachelor Of Computer Application', '2023-10-14 19:31:42'),
+(5, 'MCA565', 'MCA', 'Master of Computer Application', '2023-10-14 19:31:42'),
+(6, 'MBA75', 'MBA', 'Master of Business Administration', '2023-10-14 19:31:42'),
+(7, 'BE765', 'BE', 'Bachelor of Engineering', '2023-10-14 19:31:42');
 
-UPDATE rooms
-SET fees = 5000
-WHERE id = 3;
+INSERT INTO `registration` (`id`, `roomno`, `seater`, `feespm`, `foodstatus`, `stayfrom`, `duration`, `course`, `regno`, `firstName`, `middleName`, `lastName`, `gender`, `contactno`, `emailid`, `egycontactno`, `guardianName`, `guardianRelation`, `guardianContactno`, `corresAddress`, `corresCIty`, `corresState`, `corresPincode`, `pmntAddress`, `pmntCity`, `pmnatetState`, `pmntPincode`, `postingDate`, `updationDate`) 
+VALUES
+(2, 100, 5, 8000, 1, '2023-10-21', 6, 'Bachelor  of Technology', 10806121, 'Akash', 'd', 'Singh', 'male', 1234567890, 'ak@gmail.com', 1236547890, 'ABC', 'XYZ', 98756320000, 'ABC 12345 XYZ Street', 'New Delhi', 'Delhi (NCT)', 110001, 'ABC 12345 XYZ Street', 'New Delhi', 'Delhi (NCT)', 110001, '2023-10-21 14:58:26', NULL);
 
-DELETE FROM rooms
-ORDER BY id DESC
-LIMIT 1;
+INSERT INTO `userregistration` (`id`, `regNo`, `firstName`, `middleName`, `lastName`, `gender`, `contactNo`, `email`, `password`, `regDate`, `updationDate`, `passUdateDate`) VALUES
+(3, '10806121', 'Akash', '', 'Singh', 'male', 1234567890, 'test@gmail.com', 'Test@123', '2023-10-23 14:56:18', NULL, NULL);
 
-SELECT * FROM rooms
-WHERE fees <= 5000;
+
+--  Role-Based Access Control  ------------------------------->
+
+CREATE TABLE `roles` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `privileges` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `role_privilege` (
+  `id` int(11) NOT NULL,
+  `role_id` int(11) NOT NULL,
+  `privilege_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+ALTER TABLE `admin`
+  ADD `role_id` int(11) NOT NULL;
+-- Insert roles (e.g., admin and user)
+INSERT INTO `roles` (`id`, `name`) VALUES
+(1, 'admin'),
+(2, 'user');
+
+-- Insert privileges (e.g., read, write, delete)
+INSERT INTO `privileges` (`id`, `name`) VALUES
+(1, 'read'),
+(2, 'write'),
+(3, 'delete');
+
+-- Associate roles with privileges (customize as needed)
+INSERT INTO `role_privilege` (`id`, `role_id`, `privilege_id`) VALUES
+(1, 1, 1), -- Admin has read privilege
+(2, 1, 2), -- Admin has write privilege
+(3, 1, 3), -- Admin has delete privilege
+(4, 2, 1); -- User has read privilege
+UPDATE `admin` SET `role_id` = 1 WHERE `id` = 1;
+
+
