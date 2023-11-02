@@ -112,7 +112,7 @@ CREATE TABLE userregistration (
 -- ADD test VARCHAR(15) NOT NULL;
 
 
--- RENAME TABLE userregistration TO user;
+RENAME TABLE userregistration TO user;
 
 -- DROP TABLE IF EXISTS userlog;
 -- DROP DATABASE IF EXISTS HMS;
@@ -204,8 +204,10 @@ INSERT INTO `registration` (`id`, `roomno`, `seater`, `feespm`, `foodstatus`, `s
 VALUES
 (2, 100, 5, 8000, 1, '2023-10-21', 6, 'Bachelor  of Technology', 10806121, 'Akash', 'd', 'Singh', 'male', 1234567890, 'ak@gmail.com', 1236547890, 'ABC', 'XYZ', 98756320000, 'ABC 12345 XYZ Street', 'New Delhi', 'Delhi (NCT)', 110001, 'ABC 12345 XYZ Street', 'New Delhi', 'Delhi (NCT)', 110001, '2023-10-21 14:58:26', NULL);
 
-INSERT INTO `userregistration` (`id`, `regNo`, `firstName`, `middleName`, `lastName`, `gender`, `contactNo`, `email`, `password`, `regDate`, `updationDate`, `passUdateDate`) VALUES
-(3, '10806121', 'Akash', '', 'Singh', 'male', 1234567890, 'test@gmail.com', 'Test@123', '2023-10-23 14:56:18', NULL, NULL);
+INSERT INTO `user` (`id`, `regNo`, `firstName`, `middleName`, `lastName`, `gender`, `contactNo`, `email`, `password`, `regDate`, `updationDate`, `passUdateDate`) VALUES
+(1, '10806121', 'Akash', '', 'Singh', 'male', 1234567890, 'test@gmail.com', 'Test@123', '2023-10-23 14:56:18', NULL, NULL);
+(2, '10806121', 'Prakash', '', 'Singh', 'male', 1234567890, 'test2@gmail.com', 'Test@1234', '2023-10-23 14:56:18', NULL, NULL);
+
 
 
 --  Role-Based Access Control  ------------------------------->
@@ -222,6 +224,7 @@ CREATE TABLE privileges (
   PRIMARY KEY (id)
 );
 
+
 CREATE TABLE role_privilege (
   id INT NOT NULL AUTO_INCREMENT,
   role_id INT NOT NULL,
@@ -231,8 +234,26 @@ CREATE TABLE role_privilege (
   FOREIGN KEY (privilege_id) REFERENCES privileges(id)
 );
 
+
+ALTER TABLE admin
+ADD role_id INT;
+
+ALTER TABLE user
+ADD role_id INT;
+
+-- Insert a role (ID will be automatically generated)
+INSERT INTO roles (name) VALUES ('editor');
+
+-- Insert a privilege (ID will be automatically generated)
+INSERT INTO privileges (name) VALUES ('edit_content');
+
+-- Insert a role-privilege association
+INSERT INTO role_privilege (role_id, privilege_id) VALUES ((SELECT id FROM roles WHERE name = 'editor'), (SELECT id FROM privileges WHERE name = 'edit_content'));
+
 -- Update admin role
 UPDATE admin SET role_id = 1 WHERE id = 1;
 
--- Update userregistration role
-UPDATE userregistration SET role_id = 2 WHERE id = 3;
+-- Update user role
+UPDATE user
+SET role_id = 2;
+
