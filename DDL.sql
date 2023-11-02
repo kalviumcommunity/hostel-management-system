@@ -208,3 +208,31 @@ INSERT INTO `userregistration` (`id`, `regNo`, `firstName`, `middleName`, `lastN
 (3, '10806121', 'Akash', '', 'Singh', 'male', 1234567890, 'test@gmail.com', 'Test@123', '2023-10-23 14:56:18', NULL, NULL);
 
 
+--  Role-Based Access Control  ------------------------------->
+
+CREATE TABLE roles (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE privileges (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE role_privilege (
+  id INT NOT NULL AUTO_INCREMENT,
+  role_id INT NOT NULL,
+  privilege_id INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (role_id) REFERENCES roles(id),
+  FOREIGN KEY (privilege_id) REFERENCES privileges(id)
+);
+
+-- Update admin role
+UPDATE admin SET role_id = 1 WHERE id = 1;
+
+-- Update userregistration role
+UPDATE userregistration SET role_id = 2 WHERE id = 3;
