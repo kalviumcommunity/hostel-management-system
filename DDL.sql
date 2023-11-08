@@ -276,23 +276,45 @@ UPDATE user SET role_id = (SELECT id FROM roles WHERE name = 'user');
 
 -- Advanced SQL Queries - Joins, subqueries -------------------------------------------->
 
-SELECT registration.*, courses.course_code, courses.course_sn
-FROM registration
-INNER JOIN courses ON registration.course = courses.course_fn;
+-- SELECT registration.*, courses.course_code, courses.course_sn
+-- FROM registration
+-- INNER JOIN courses ON registration.course = courses.course_fn;
 
-SELECT registration.*
-FROM registration
-LEFT JOIN rooms ON registration.roomno = rooms.room_no
-WHERE rooms.room_no IS NULL;
+-- SELECT registration.*
+-- FROM registration
+-- LEFT JOIN rooms ON registration.roomno = rooms.room_no
+-- WHERE rooms.room_no IS NULL;
 
+-- SELECT
+--     (SELECT COUNT(*) FROM admin) AS total_admins,
+--     (SELECT COUNT(*) FROM admin WHERE role_id = 2) AS total_admins_2;
+
+-- SELECT *
+-- FROM registration
+-- WHERE regno IN (SELECT regno FROM user WHERE role_id = 1);
+
+
+-- Select the course code, count of registrations, and total fees
 SELECT
-    (SELECT COUNT(*) FROM admin) AS total_admins,
-    (SELECT COUNT(*) FROM admin WHERE role_id = 2) AS total_users;
+    courses.course_code,
+    COUNT(registration.id) AS total_registrations
+    SUM(registration.feespm) AS total_fees 
+FROM courses
+LEFT JOIN registration ON courses.course_code = registration.course 
+GROUP BY courses.course_code; 
 
-SELECT *
-FROM registration
-WHERE regno IN (SELECT regno FROM user WHERE role_id = 1);
 
+SELECT id, username, email
+FROM admin
+WHERE EXISTS (
+    SELECT 1
+    FROM adminlog
+    WHERE adminlog.adminid = admin.id
+);
+
+SELECT r1.room_no AS room1, r2.room_no AS room2
+FROM rooms r1
+JOIN rooms r2 ON r1.seater = r2.seater AND r1.room_no < r2.room_no;
 
 
 -- Indexing and query optimization -------------------------------------------------------->
