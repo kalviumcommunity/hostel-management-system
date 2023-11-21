@@ -148,6 +148,14 @@ INSERT INTO `rooms` (`id`, `seater`, `room_no`, `fees`, `posting_date`) VALUES
 INSERT INTO `userlog` (`id`, `userId`, `userEmail`, `userIp`, `city`, `country`, `loginTime`) VALUES
 (6, 3, '10806121', 0x3a3a31, '', '', '2023-10-12 14:56:45');
 
+INSERT INTO `adminlog` (`id`, `adminid`, `ip`, `logintime`)
+VALUES
+(1, 1, 0x3a3a31, '2023-10-10 20:45:00'),
+(2, 1, 0x3a3a31, '2023-10-12 20:45:00'),
+(3, 1, 0x3a3a31, '2023-10-15 20:45:00'); 
+
+
+
 
 INSERT INTO `states` (`id`, `State`) VALUES
 (1, 'Andaman and Nicobar Island (UT)'),
@@ -202,11 +210,16 @@ INSERT INTO `courses` (`id`, `course_code`, `course_sn`, `course_fn`, `posting_d
 
 INSERT INTO `registration` (`id`, `roomno`, `seater`, `feespm`, `foodstatus`, `stayfrom`, `duration`, `course`, `regno`, `firstName`, `middleName`, `lastName`, `gender`, `contactno`, `emailid`, `egycontactno`, `guardianName`, `guardianRelation`, `guardianContactno`, `corresAddress`, `corresCIty`, `corresState`, `corresPincode`, `pmntAddress`, `pmntCity`, `pmnatetState`, `pmntPincode`, `postingDate`, `updationDate`) 
 VALUES
-(2, 100, 5, 8000, 1, '2023-10-21', 6, 'Bachelor  of Technology', 10806121, 'Akash', 'd', 'Singh', 'male', 1234567890, 'ak@gmail.com', 1236547890, 'ABC', 'XYZ', 98756320000, 'ABC 12345 XYZ Street', 'New Delhi', 'Delhi (NCT)', 110001, 'ABC 12345 XYZ Street', 'New Delhi', 'Delhi (NCT)', 110001, '2023-10-21 14:58:26', NULL);
+(1, 101, 5, 60000, 1, '2023-10-21', 6, 'B10992', 12345, 'Akash', 'd', 'Singh', 'male', 1234567890, 'pr@gmail.com', 1236547890, 'ABC', 'XYZ', 98756328808, 'ABC 12345 XYZ Street', 'Old Delhi', 'Delhi (NCT)', 110001, 'ABC 12345 XYZ Street', 'Old Delhi', 'Delhi (NCT)', 110002, '2023-10-21 14:58:26', NULL),
+(2, 101, 5, 90000, 1, '2023-10-21', 6, 'MBA75', 12346, 'Prakash', 'd', 'Sing', 'male', 1234567890, 'pr@gmail.com', 1236547890, 'ABC', 'XYZ', 98756328808, 'ABC 12345 XYZ Street', 'Old Delhi', 'Delhi (NCT)', 110001, 'ABC 12345 XYZ Street', 'Old Delhi', 'Delhi (NCT)', 110002, '2023-10-21 14:58:26', NULL),
+(3, 100, 5, 50000, 1, '2023-10-21', 6, 'B10992', 12347, 'Dhomi', 'd', 'Ketu', 'female', 1234567890, 'dk@gmail.com', 1236547890, 'ABC', 'XYZ', 98756320000, 'ABC 12345 XYZ Street', 'New Delhi', 'Delhi (NCT)', 110001, 'ABC 12345 XYZ Street', 'New Delhi', 'Delhi (NCT)', 110001, '2023-10-21 14:58:26', NULL)
+
 
 INSERT INTO `user` (`id`, `regNo`, `firstName`, `middleName`, `lastName`, `gender`, `contactNo`, `email`, `password`, `regDate`, `updationDate`, `passUdateDate`) VALUES
-(1, '10806121', 'Akash', '', 'Singh', 'male', 1234567890, 'test@gmail.com', 'Test@123', '2023-10-23 14:56:18', NULL, NULL),
-(2, '10806121', 'Prakash', '', 'Singh', 'male', 1234567890, 'test2@gmail.com', 'Test@1234', '2023-10-23 14:56:18', NULL, NULL)
+(1, '12345', 'Akash', 'd', 'Singh', 'male', 1234567890, 'test@gmail.com', 'Test@123', '2023-10-23 14:56:18', NULL, NULL),
+(2, '12346', 'Prakash', 'd', 'Singh', 'male', 1234567890, 'test2@gmail.com', 'Test@1234', '2023-10-23 14:56:18', NULL, NULL),
+(3, '12347', 'Dhoomi', 'd', 'Ketu', 'female', 1234567890, 'test3@gmail.com', 'Test@1234', '2023-10-23 14:56:18', NULL, NULL)
+
 
 
 
@@ -258,6 +271,72 @@ UPDATE admin SET role_id = (SELECT id FROM roles WHERE name = 'admin');
 
 -- Update Role for All Users
 UPDATE user SET role_id = (SELECT id FROM roles WHERE name = 'user');
+
+
+
+-- Advanced SQL Queries - Joins, subqueries -------------------------------------------->
+
+-- SELECT registration.*, courses.course_code, courses.course_sn
+-- FROM registration
+-- INNER JOIN courses ON registration.course = courses.course_fn;
+
+-- SELECT registration.*
+-- FROM registration
+-- LEFT JOIN rooms ON registration.roomno = rooms.room_no
+-- WHERE rooms.room_no IS NULL;
+
+-- SELECT
+--     (SELECT COUNT(*) FROM admin) AS total_admins,
+--     (SELECT COUNT(*) FROM admin WHERE role_id = 2) AS total_admins_2;
+
+-- SELECT *
+-- FROM registration
+-- WHERE regno IN (SELECT regno FROM user WHERE role_id = 1);
+
+
+-- Select the course code, count of registrations, and total fees
+SELECT
+    courses.course_code,
+    COUNT(registration.id) AS total_registrations
+    SUM(registration.feespm) AS total_fees 
+FROM courses
+LEFT JOIN registration ON courses.course_code = registration.course 
+GROUP BY courses.course_code; 
+
+
+SELECT id, username, email
+FROM admin
+WHERE EXISTS (
+    SELECT 1
+    FROM adminlog
+    WHERE adminlog.adminid = admin.id
+);
+
+SELECT r1.room_no AS room1, r2.room_no AS room2
+FROM rooms r1
+JOIN rooms r2 ON r1.seater = r2.seater AND r1.room_no < r2.room_no;
+
+
+-- Indexing and query optimization -------------------------------------------------------->
+
+CREATE INDEX idx_regno ON registration (regno);
+CREATE INDEX idx_course_code ON courses (course_code);
+
+-- Query plan
+EXPLAIN SELECT * FROM registration WHERE regno = 12345;
+
+-- Select specific columns
+SELECT regno, firstName, lastName FROM registration WHERE regno = 12345;
+
+-- Select all columns (useful when you need all columns)
+SELECT * FROM registration WHERE regno = 12345;
+
+-- Less efficient query
+SELECT * FROM registration WHERE YEAR(stayfrom) = 2023;
+
+-- More efficient query (date range)
+SELECT * FROM registration WHERE stayfrom >= '2023-01-01' AND stayfrom < '2024-01-01';
+
 
 
 
